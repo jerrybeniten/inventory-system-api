@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\AuthRegisterRequest;
 use App\Models\User;
+use App\Repositories\OAuthRepository;
+use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -11,26 +14,23 @@ use Illuminate\Support\Facades\Http;
 
 class AuthController extends Controller
 {
-    /**
-     * User registration
-     */
-    public function register(Request $request): JsonResponse
+    private $userRepository;
+    private $oAuthRepository;
+
+    public function __construct(
+        UserRepository $userRepository,
+        OAuthRepository $oAuthRepository
+    ) {
+        $this->userRepository = $userRepository;
+        $this->oAuthRepository = $oAuthRepository;
+    }
+
+    public function register(AuthRegisterRequest $request): JsonResponse
     {
-        //$userData = $request->validated();
-        $userData = $request->all();
-
+        $userData = $request->validated();
         $userData['email_verified_at'] = now();
-        $user = User::create($userData);
-
-        $response = Http::post(env('APP_URL') . '/oauth/token', [
-            'grant_type' => 'password',
-            'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-            'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-            'username' => $userData['email'],
-            'password' => $userData['password'],
-            'scope' => '',
-        ]);
-
+        $user =  $this->userRepository->create($userData);
+        $response = $this->oAuthRepository->register($userData);
         $user['token'] = $response->json();
 
         return response()->json([
