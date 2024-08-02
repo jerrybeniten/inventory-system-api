@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\v1;
 
+use App\Http\Requests\AuthLoginRequest;
 use App\Http\Requests\AuthRegisterRequest;
 use App\Models\User;
 use App\Repositories\OAuthRepository;
@@ -17,6 +18,11 @@ class AuthController extends Controller
     private $userRepository;
     private $oAuthRepository;
 
+    /**
+     * __construct
+     *
+     * @return void
+     */
     public function __construct(
         UserRepository $userRepository,
         OAuthRepository $oAuthRepository
@@ -25,12 +31,18 @@ class AuthController extends Controller
         $this->oAuthRepository = $oAuthRepository;
     }
 
+    /**
+     * register
+     *
+     * @param  mixed $request
+     * @return JsonResponse
+     */
     public function register(AuthRegisterRequest $request): JsonResponse
     {
-        $userData = $request->validated();
-        $userData['email_verified_at'] = now();
-        $user =  $this->userRepository->create($userData);
-        $response = $this->oAuthRepository->register($userData);
+        $data = $request->validated();
+        $data['email_verified_at'] = now();
+        $user =  $this->userRepository->create($data);
+        $response = $this->oAuthRepository->register($data);
         $user['token'] = $response->json();
 
         return response()->json([
@@ -41,94 +53,28 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * Login user
-     */
-    // public function login(LoginRequest $request): JsonResponse
-    // {
-    //     if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-    //         $user = Auth::user();
+    public function login(AuthLoginRequest $request): JsonResponse
+    {
+        $data = $request->validated();
 
-    //         $response = Http::post(env('APP_URL') . '/oauth/token', [
-    //             'grant_type' => 'password',
-    //             'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-    //             'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-    //             'username' => $request->email,
-    //             'password' => $request->password,
-    //             'scope' => '',
-    //         ]);
+        if (Auth::attempt($data)) {
+            $user = Auth::user();
+            $response = $this->oAuthRepository->login($data);
+            $user['token'] = $response->json();
 
-    //         $user['token'] = $response->json();
+            return response()->json([
+                'success' => true,
+                'statusCode' => 200,
+                'message' => 'User has been logged successfully.',
+                'data' => $user,
+            ], 200);
+        }
 
-    //         return response()->json([
-    //             'success' => true,
-    //             'statusCode' => 200,
-    //             'message' => 'User has been logged successfully.',
-    //             'data' => $user,
-    //         ], 200);
-    //     } else {
-    //         return response()->json([
-    //             'success' => true,
-    //             'statusCode' => 401,
-    //             'message' => 'Unauthorized.',
-    //             'errors' => 'Unauthorized',
-    //         ], 401);
-    //     }
-
-    //}
-
-    /**
-     * Login user
-     *
-     * @param  LoginRequest  $request
-     */
-    // public function me(): JsonResponse
-    // {
-
-    //     $user = auth()->user();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'statusCode' => 200,
-    //         'message' => 'Authenticated use info.',
-    //         'data' => $user,
-    //     ], 200);
-    // }
-
-    /**
-     * refresh token
-     *
-     * @return void
-     */
-    // public function refreshToken(RefreshTokenRequest $request): JsonResponse
-    // {
-    //     $response = Http::asForm()->post(env('APP_URL') . '/oauth/token', [
-    //         'grant_type' => 'refresh_token',
-    //         'refresh_token' => $request->refresh_token,
-    //         'client_id' => env('PASSPORT_PASSWORD_CLIENT_ID'),
-    //         'client_secret' => env('PASSPORT_PASSWORD_SECRET'),
-    //         'scope' => '',
-    //     ]);
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'statusCode' => 200,
-    //         'message' => 'Refreshed token.',
-    //         'data' => $response->json(),
-    //     ], 200);
-    // }
-
-    /**
-     * Logout
-     */
-    // public function logout(): JsonResponse
-    // {
-    //     Auth::user()->tokens()->delete();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'statusCode' => 204,
-    //         'message' => 'Logged out successfully.',
-    //     ], 204);
-    // }
+        return response()->json([
+            'success' => true,
+            'statusCode' => 401,
+            'message' => 'Unauthorized.',
+            'errors' => 'Unauthorized',
+        ], 401);
+    }
 }

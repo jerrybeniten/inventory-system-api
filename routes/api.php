@@ -21,6 +21,7 @@ Route::prefix('/v1/auth')
     ->controller(AuthController::class)
     ->group(function () {
         Route::post('/register', 'register')->name('auth.register');
+        Route::post('/login', 'login')->name('auth.login');
     });
 
 Route::fallback(function () {
