@@ -1,0 +1,19 @@
+services:
+  webserver:
+    build: ./php
+    ports: 
+      - "80:80"
+    volumes:
+      - ../:/var/www/html
+    links:
+      - mysql
+
+  mysql:
+    build: ./mysql
+    ports: 
+      - "3306:3306"
+    volumes:
+      - ./mysql/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=inventory_system_api
