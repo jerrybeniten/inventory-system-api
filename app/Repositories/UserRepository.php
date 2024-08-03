@@ -4,27 +4,56 @@ namespace App\Repositories;
 
 use App\Contracts\EloquentContract;
 use App\Models\User;
+use Illuminate\Pagination\LengthAwarePaginator;
 
+
+/**
+ * UserRepository
+ */
 class UserRepository extends EloquentContract
 {
     private $model;
-
+    
+    /**
+     * __construct
+     *
+     * @param  mixed $model
+     * @return void
+     */
     public function __construct(User $model)
     {
         $this->model = $model;
     }
-
-    public function create(array $data)
+    
+    /**
+     * create
+     *
+     * @param  mixed $data
+     * @return void
+     */
+    public function create(array $data): void
     {
         $this->model->create($data);
     }
-
-    public function read()
+    
+    /**
+     * read
+     *
+     * @return LengthAwarePaginator
+     */
+    public function read(): LengthAwarePaginator
     {
         return $this->model->paginate();
     }
-
-    public function update(array $data, $user)
+    
+    /**
+     * update
+     *
+     * @param  mixed $data
+     * @param  mixed $user
+     * @return void
+     */
+    public function update(array $data, $user): void
     {
         $user->update(
             [
@@ -36,8 +65,14 @@ class UserRepository extends EloquentContract
             ]
         );
     }
-
-    public function delete($user)
+    
+    /**
+     * delete
+     *
+     * @param  mixed $user
+     * @return void
+     */
+    public function delete($user): void
     {
         $user->delete();
     }

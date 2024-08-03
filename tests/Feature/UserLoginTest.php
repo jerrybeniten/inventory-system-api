@@ -8,14 +8,12 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class UserLoginTest extends TestCase
-{
-    /**
-     * A basic feature test example.
-     */
-    public function test_example(): void
+{ 
+    public function test_user_can_login(): void
     {
+        $password = 'password123';
         $user = User::factory()->create([
-            'password' => bcrypt($password = 'password123'),
+            'password' => bcrypt($password),
         ]);
         
         $response = $this->postJson('/api/v1/auth/login', [
