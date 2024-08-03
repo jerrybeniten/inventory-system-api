@@ -9,6 +9,7 @@ use App\Repositories\ProductRepository;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 
 class ProductController extends Controller
@@ -34,36 +35,47 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request): JsonResponse
     {
+        try {
+            $data = $request->validated();
+            $this->productRepository->create($data);
 
-        $data = $request->validated();
-        $this->productRepository->create($data);
-
-        return response()->json([
-            'message' => 'Product has been created',
-            'data' =>  $data,
-        ], 201);
+            return response()->json([
+                'message' => 'Product has been created',
+                'data' =>  $data,
+            ], Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
-
+    
     /**
      * paginate
      *
-     * @return void
+     * @return JsonResponse
      */
     public function paginate(): JsonResponse
     {
-        $products = $this->productRepository->read();
+        try {
+            $products = $this->productRepository->read();
 
-        return response()->json([
-            'message' => 'Product has been returned',
-            'data' =>  $products,
-        ], 200);
+            return response()->json([
+                'message' => 'Product has been returned',
+                'data' =>  $products,
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
      * update
      *
-     * @param  mixed $request
-     * @param  mixed $product
+     * @param  ProductUpdateRequest $request
+     * @param  Product $product
      * @return void
      */
     public function update(ProductUpdateRequest $request, Product $product): JsonResponse
@@ -74,19 +86,31 @@ class ProductController extends Controller
             return response()->json([
                 'message' => 'Product has been updated successfully',
                 'data' => $data,
-            ], 200);
+            ], Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
             ]);
         }
     }
-
+    
+    /**
+     * destroy
+     *
+     * @param  Product $product
+     * @return JsonResponse
+     */
     public function destroy(Product $product): JsonResponse
     {
-        $this->productRepository->delete($product);
-        return response()->json([
-            'message' => 'Product has been deleted successfully',
-        ], 204);
+        try {
+            $this->productRepository->delete($product);
+            return response()->json([
+                'message' => 'Product has been deleted successfully',
+            ], Response::HTTP_NO_CONTENT);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }
