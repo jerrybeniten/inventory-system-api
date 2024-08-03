@@ -24,8 +24,21 @@ class UserRepository extends EloquentContract
         return $this->model->paginate();
     }
 
-    public function update($data)
+    public function update(array $data, $user)
     {
-        return $this->model->paginate();
+        $user->update(
+            [
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'type_id' => $data['type_id'],
+                'quantity' => $data['quantity'],
+                'unit_price' => $data['unit_price'],
+            ]
+        );
+    }
+
+    public function delete($user)
+    {
+        $user->delete();
     }
 }

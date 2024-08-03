@@ -14,8 +14,9 @@ Route::middleware('auth:api')->group(function () {
         ->controller(ProductController::class)
         ->group(function () {
             Route::put('/{product}', 'update')->name('product.update');
+            Route::delete('/{product}', 'destroy')->name('product.destroy');
             Route::post('/', 'store')->name('product.store');
-            Route::get('/', 'paginate')->name('products.paginate');
+            Route::get('/', 'paginate')->name('products.paginate');            
         });
 });
 

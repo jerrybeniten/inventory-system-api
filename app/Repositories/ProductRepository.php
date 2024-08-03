@@ -36,4 +36,9 @@ class ProductRepository extends EloquentContract
             ]
         );
     }
+
+    public function delete($product)
+    {
+        $product->delete();
+    }
 }

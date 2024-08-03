@@ -6,6 +6,7 @@ use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -30,7 +31,7 @@ class ProductController extends Controller
      * @param  mixed $request
      * @return void
      */
-    public function store(ProductStoreRequest $request)
+    public function store(ProductStoreRequest $request): JsonResponse
     {
 
         $data = $request->validated();
@@ -42,7 +43,12 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function paginate()
+    /**
+     * paginate
+     *
+     * @return void
+     */
+    public function paginate(): JsonResponse
     {
         $products = $this->productRepository->read();
 
@@ -52,7 +58,14 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function update(ProductUpdateRequest $request, Product $product)
+    /**
+     * update
+     *
+     * @param  mixed $request
+     * @param  mixed $product
+     * @return void
+     */
+    public function update(ProductUpdateRequest $request, Product $product): JsonResponse
     {
         $data = $request->validated();
         $this->productRepository->update($data, $product);
@@ -60,5 +73,13 @@ class ProductController extends Controller
             'message' => 'Product has been updated successfully',
             'data' => $data,
         ], 200);
+    }
+
+    public function destroy(Product $product): JsonResponse
+    {
+        $this->productRepository->delete($product);
+        return response()->json([
+            'message' => 'Product has been deleted successfully',
+        ], 204);
     }
 }
