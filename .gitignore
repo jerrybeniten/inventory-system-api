@@ -18,4 +18,5 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/.docker-resto-express/mysql/
+.docker-inventory-system-api/mysql/
+.docker-inventory-system-api/mysql/db/
