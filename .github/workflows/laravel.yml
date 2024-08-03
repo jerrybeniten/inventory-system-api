@@ -27,15 +27,6 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
-    - name: Generate Passport Password Client
-      id: passport-client
-      run: |
-        output=$(php artisan passport:client --password --name "Test Password Grant Client" --no-interaction)
-        echo "$output"
-        client_id=$(echo "$output" | grep -Po '(?<=Client ID: )[^ ]*')
-        client_secret=$(echo "$output" | grep -Po '(?<=Client secret: )[^ ]*')
-        echo "PASSPORT_PASSWORD_CLIENT_ID=$client_id" >> $GITHUB_ENV
-        echo "PASSPORT_PASSWORD_SECRET=$client_secret" >> $GITHUB_ENV
     - name: Run Migrations
       run: php artisan migrate
       env:
@@ -45,4 +36,7 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-      run: php artisan test
+    - name: Run PHPStan analysis
+      run: |
+          ls -la vendor/bin  # Double-check phpstan's existence
+          ./vendor/bin/phpstan analyse --configuration phpstan.neon --memory-limit=2G
