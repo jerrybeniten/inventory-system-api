@@ -18,4 +18,9 @@ class UserRepository extends EloquentContract
     {
         $this->model->create($data);
     }
+
+    public function read()
+    {
+        return $this->model->paginate();
+    }
 }
