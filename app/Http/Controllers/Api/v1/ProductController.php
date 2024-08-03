@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,16 +21,17 @@ class ProductController extends Controller
     public function __construct(
         ProductRepository $productRepository
     ) {
-        $this->productRepository = $productRepository;        
+        $this->productRepository = $productRepository;
     }
-    
+
     /**
      * store
      *
      * @param  mixed $request
      * @return void
      */
-    public function store(ProductStoreRequest $request) {
+    public function store(ProductStoreRequest $request)
+    {
 
         $data = $request->validated();
         $this->productRepository->create($data);
@@ -39,7 +42,8 @@ class ProductController extends Controller
         ], 200);
     }
 
-    public function paginate() {        
+    public function paginate()
+    {
         $products = $this->productRepository->read();
 
         return response()->json([
@@ -48,5 +52,13 @@ class ProductController extends Controller
         ], 200);
     }
 
-
+    public function update(ProductUpdateRequest $request, Product $product)
+    {
+        $data = $request->validated();
+        $this->productRepository->update($data, $product);
+        return response()->json([
+            'message' => 'Product has been updated successfully',
+            'data' => $data,
+        ], 200);
+    }
 }

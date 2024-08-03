@@ -13,6 +13,7 @@ Route::middleware('auth:api')->group(function () {
     Route::prefix('/v1/product')
         ->controller(ProductController::class)
         ->group(function () {
+            Route::put('/{product}', 'update')->name('product.update');
             Route::post('/', 'store')->name('product.store');
             Route::get('/', 'paginate')->name('products.paginate');
         });

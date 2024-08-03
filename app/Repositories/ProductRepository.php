@@ -23,4 +23,17 @@ class ProductRepository extends EloquentContract
     {
         return $this->model->paginate(5);
     }
+
+    public function update(array $data, $product)
+    {
+        $product->update(
+            [
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'type_id' => $data['type_id'],
+                'quantity' => $data['quantity'],
+                'unit_price' => $data['unit_price'],
+            ]
+        );
+    }
 }

@@ -23,4 +23,9 @@ class UserRepository extends EloquentContract
     {
         return $this->model->paginate();
     }
+
+    public function update($data)
+    {
+        return $this->model->paginate();
+    }
 }
