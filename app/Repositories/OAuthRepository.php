@@ -4,11 +4,12 @@ namespace App\Repositories;
 
 use App\Contracts\OAuthLoginContract;
 use App\Contracts\OAuthRegisterContract;
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class OAuthRepository implements OAuthRegisterContract, OAuthLoginContract
 {
-    public function register(array $data)
+    public function register(array $data): Response
     {
         return Http::post(env('APP_URL') . '/oauth/token', [
             'grant_type' => 'password',
@@ -20,7 +21,7 @@ class OAuthRepository implements OAuthRegisterContract, OAuthLoginContract
         ]);
     }
 
-    public function login(array $data)
+    public function login(array $data): Response
     {
         return Http::post(env('APP_URL') . '/oauth/token', [
             'grant_type' => 'password',

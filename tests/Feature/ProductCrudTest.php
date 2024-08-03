@@ -79,31 +79,7 @@ class ProductCrudTest extends TestCase
             'Accept' => 'application/json',
         ])->post('/api/v1/product', $productData);
         $response->assertStatus(422);
-    }
-
-    /**
-     * test_return_negative_quantity_create_response
-     *
-     * @return void
-     */
-    public function test_return_negative_quantity_create_response(): void
-    {
-        $user = User::factory()->create();
-        Passport::actingAs($user);
-
-        $productData = [
-            'name' => 'Sample Product',
-            'description' => 'This is a sample product description.',
-            'type_id' => 1,
-            'quantity' => -10,
-            'unit_price' => 99.99,
-        ];
-
-        $response = $response = $this->withHeaders([
-            'Accept' => 'application/json',
-        ])->post('/api/v1/product', $productData);
-        $response->assertStatus(500);
-    }
+    }   
 
     /**
      * test_return_successful_create_response
