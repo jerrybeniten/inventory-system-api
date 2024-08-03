@@ -6,6 +6,7 @@ use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -40,7 +41,7 @@ class ProductController extends Controller
         return response()->json([
             'message' => 'Product has been created',
             'data' =>  $data,
-        ], 200);
+        ], 201);
     }
 
     /**
@@ -53,7 +54,7 @@ class ProductController extends Controller
         $products = $this->productRepository->read();
 
         return response()->json([
-            'message' => 'Product has been created',
+            'message' => 'Product has been returned',
             'data' =>  $products,
         ], 200);
     }
@@ -67,12 +68,18 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product): JsonResponse
     {
-        $data = $request->validated();
-        $this->productRepository->update($data, $product);
-        return response()->json([
-            'message' => 'Product has been updated successfully',
-            'data' => $data,
-        ], 200);
+        try {
+            $data = $request->validated();
+            $this->productRepository->update($data, $product);
+            return response()->json([
+                'message' => 'Product has been updated successfully',
+                'data' => $data,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 
     public function destroy(Product $product): JsonResponse
