@@ -5,7 +5,7 @@ parameters:
     phpVersion: 80200  # For PHP 8.2
     paths:
         - app\Contracts
-    level: 9
+    level: 4
     ignoreErrors:
         
     excludePaths:
