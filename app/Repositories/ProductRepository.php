@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\EloquentContract;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 
@@ -33,7 +34,8 @@ class ProductRepository extends EloquentContract
      */
     public function create(array $data): void
     {
-        $this->model->create($data);
+        $product = $this->model->create($data);
+        $product->categories()->attach($data['categories']);
     }
     
     /**
@@ -43,7 +45,7 @@ class ProductRepository extends EloquentContract
      */
     public function read(): LengthAwarePaginator
     {
-        return $this->model->paginate(5);
+        return $this->model::with('categories')->paginate(5);        
     }
     
     /**
@@ -58,12 +60,13 @@ class ProductRepository extends EloquentContract
         $product->update(
             [
                 'name' => $data['name'],
-                'description' => $data['description'],
-                'type_id' => $data['type_id'],
+                'description' => $data['description'],                
                 'quantity' => $data['quantity'],
                 'unit_price' => $data['unit_price'],
             ]
         );
+
+        $product->categories()->sync($data['categories']);
     }
     
     /**
