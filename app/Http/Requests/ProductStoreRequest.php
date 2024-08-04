@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-
+use Illuminate\Http\Response;
 
 class ProductStoreRequest extends FormRequest
 {
@@ -26,7 +26,13 @@ class ProductStoreRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string',            
+            'description' => 'required|string',
+            'categories' => ['required', 'array', function ($attribute, $value, $fail) {
+                if (count($value) !== count(array_unique($value))) {
+                    $fail('The categories must not have duplicate values.');
+                }
+            }],
+            'categories.*' => 'integer',
             'quantity' => 'required|integer',
             'unit_price' => 'required|numeric',
         ];
@@ -37,6 +43,6 @@ class ProductStoreRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'message' => 'Validation errors occurred',
             'errors' => $validator->errors()
-        ], 422));
+        ], Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

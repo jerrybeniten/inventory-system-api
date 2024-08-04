@@ -24,7 +24,7 @@ class ProductCrudTest extends TestCase
         Passport::actingAs($user);
 
         $productData = [
-            'description' => 'This is a sample product description.',            
+            'description' => 'This is a sample product description.',
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -32,7 +32,7 @@ class ProductCrudTest extends TestCase
         $response = $this->withHeaders([
             'Accept' => 'application/json',
         ])->post('/api/v1/product', $productData);
-        $response->assertStatus(422);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     /**
@@ -46,7 +46,7 @@ class ProductCrudTest extends TestCase
         Passport::actingAs($user);
 
         $productData = [
-            'name' => 'Sample Product',            
+            'name' => 'Sample Product',
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -69,7 +69,8 @@ class ProductCrudTest extends TestCase
 
         $productData = [
             'name' => 'Sample Product',
-            'description' => 'This is a sample product description.',            
+            'description' => 'This is a sample product description.',
+            'categories' => [1, 2, 3],
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -103,7 +104,7 @@ class ProductCrudTest extends TestCase
         $user = User::factory()->create();
         Passport::actingAs($user);
         $response = $this->get('/api/v1/product?page=1');
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     /**
@@ -116,7 +117,7 @@ class ProductCrudTest extends TestCase
         $user = User::factory()->create();
         Passport::actingAs($user);
         $response = $this->get('/api/v1/product?page=1000000');
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     public function test_return_successful_product_update(): void
@@ -133,7 +134,8 @@ class ProductCrudTest extends TestCase
 
         $updatedData = [
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',            
+            'description' => 'Updated description',
+            'categories' => [3, 4, 5],
             'quantity' => 20,
             'unit_price' => 199.99,
         ];
@@ -142,12 +144,12 @@ class ProductCrudTest extends TestCase
             'Accept' => 'application/json',
         ])->put("/api/v1/product/{$product->id}", $updatedData);
 
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',            
+            'description' => 'Updated description',
             'quantity' => 20,
             'unit_price' => 199.99,
         ]);
@@ -159,7 +161,7 @@ class ProductCrudTest extends TestCase
 
         $updatedData = [
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',            
+            'description' => 'Updated description',
             'quantity' => 20,
             'unit_price' => 199.99,
         ];
@@ -168,9 +170,9 @@ class ProductCrudTest extends TestCase
             'Accept' => 'application/json',
         ])->put("/api/v1/product/{$product->id}", $updatedData);
 
-        $response->assertStatus(401);
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
-    
+
     /**
      * test_product_deletion_fails_when_not_authenticated
      *
@@ -182,9 +184,9 @@ class ProductCrudTest extends TestCase
         $response = $this->withHeaders([
             'Accept' => 'application/json',
         ])->delete("/api/v1/product/{$product->id}");
-        $response->assertStatus(401);
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
-    
+
     /**
      * test_product_can_be_deleted
      *

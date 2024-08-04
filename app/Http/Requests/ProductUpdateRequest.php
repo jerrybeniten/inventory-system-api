@@ -23,9 +23,15 @@ class ProductUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [            
+        return [
             'name' => 'required|string|max:255',
-            'description' => 'required|string',            
+            'description' => 'required|string',
+            'categories' => ['required', 'array', function ($attribute, $value, $fail) {
+                if (count($value) !== count(array_unique($value))) {
+                    $fail('The categories must not have duplicate values.');
+                }
+            }],
+            'categories.*' => 'integer',
             'quantity' => 'required|integer',
             'unit_price' => 'required|numeric',
         ];

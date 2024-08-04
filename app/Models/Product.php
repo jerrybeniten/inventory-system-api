@@ -17,8 +17,8 @@ class Product extends Model
         'unit_price'
     ];
 
-    public function categories(): void
+    public function categories()
     {
-        $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class);
     }
 }
