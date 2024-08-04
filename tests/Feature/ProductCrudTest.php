@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 
@@ -23,8 +24,7 @@ class ProductCrudTest extends TestCase
         Passport::actingAs($user);
 
         $productData = [
-            'description' => 'This is a sample product description.',
-            'type_id' => 1,
+            'description' => 'This is a sample product description.',            
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -46,8 +46,7 @@ class ProductCrudTest extends TestCase
         Passport::actingAs($user);
 
         $productData = [
-            'name' => 'Sample Product',
-            'type_id' => 1,
+            'name' => 'Sample Product',            
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -55,31 +54,8 @@ class ProductCrudTest extends TestCase
         $response = $this->withHeaders([
             'Accept' => 'application/json',
         ])->post('/api/v1/product', $productData);
-        $response->assertStatus(422);
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
-
-    /**
-     * test_return_negative_no_type_id_create_response
-     *
-     * @return void
-     */
-    public function test_return_negative_no_type_id_create_response(): void
-    {
-        $user = User::factory()->create();
-        Passport::actingAs($user);
-
-        $productData = [
-            'name' => 'Sample Product',
-            'description' => 'This is a sample product description.',
-            'quantity' => 10,
-            'unit_price' => 99.99,
-        ];
-
-        $response = $this->withHeaders([
-            'Accept' => 'application/json',
-        ])->post('/api/v1/product', $productData);
-        $response->assertStatus(422);
-    }   
 
     /**
      * test_return_successful_create_response
@@ -93,8 +69,7 @@ class ProductCrudTest extends TestCase
 
         $productData = [
             'name' => 'Sample Product',
-            'description' => 'This is a sample product description.',
-            'type_id' => 1,
+            'description' => 'This is a sample product description.',            
             'quantity' => 10,
             'unit_price' => 99.99,
         ];
@@ -102,7 +77,7 @@ class ProductCrudTest extends TestCase
         $response = $response = $this->withHeaders([
             'Accept' => 'application/json',
         ])->post('/api/v1/product', $productData);
-        $response->assertStatus(201);
+        $response->assertStatus(Response::HTTP_CREATED);
     }
 
     /**
@@ -115,7 +90,7 @@ class ProductCrudTest extends TestCase
         $user = User::factory()->create();
         Passport::actingAs($user);
         $response = $this->get('/api/v1/product');
-        $response->assertStatus(200);
+        $response->assertStatus(Response::HTTP_OK);
     }
 
     /**
@@ -151,16 +126,14 @@ class ProductCrudTest extends TestCase
 
         $product = Product::factory()->create([
             'name' => 'Old Product Name',
-            'description' => 'Old description',
-            'type_id' => 1,
+            'description' => 'Old description',            
             'quantity' => 10,
             'unit_price' => 99.99,
         ]);
 
         $updatedData = [
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',
-            'type_id' => 2,
+            'description' => 'Updated description',            
             'quantity' => 20,
             'unit_price' => 199.99,
         ];
@@ -174,8 +147,7 @@ class ProductCrudTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',
-            'type_id' => 2,
+            'description' => 'Updated description',            
             'quantity' => 20,
             'unit_price' => 199.99,
         ]);
@@ -187,8 +159,7 @@ class ProductCrudTest extends TestCase
 
         $updatedData = [
             'name' => 'Updated Product Name',
-            'description' => 'Updated description',
-            'type_id' => 2,
+            'description' => 'Updated description',            
             'quantity' => 20,
             'unit_price' => 199.99,
         ];

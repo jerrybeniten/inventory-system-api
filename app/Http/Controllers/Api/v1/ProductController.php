@@ -38,7 +38,7 @@ class ProductController extends Controller
         try {
             $data = $request->validated();
             $this->productRepository->create($data);
-
+            
             return response()->json([
                 'message' => 'Product has been created',
                 'data' =>  $data,

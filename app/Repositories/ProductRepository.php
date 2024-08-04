@@ -58,8 +58,7 @@ class ProductRepository extends EloquentContract
         $product->update(
             [
                 'name' => $data['name'],
-                'description' => $data['description'],
-                'type_id' => $data['type_id'],
+                'description' => $data['description'],                
                 'quantity' => $data['quantity'],
                 'unit_price' => $data['unit_price'],
             ]
